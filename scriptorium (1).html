@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Scriptorium — Verse Memory Practice</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink: #1c2333;
+  --ink-soft: #2c3550;
+  --parchment: #f2ead9;
+  --parchment-dim: #e7dcc2;
+  --gold: #b8873f;
+  --gold-bright: #d6a75c;
+  --sage: #6f8f6b;
+  --rose: #a85a52;
+  --line: rgba(184,135,63,0.28);
+  --shadow: 0 18px 40px -14px rgba(10,12,22,0.55);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background: radial-gradient(ellipse at top, #232c46 0%, var(--ink) 55%, #12172a 100%);
+  color: var(--parchment);
+  font-family:'Source Sans 3', sans-serif;
+  min-height:100vh;
+  padding: 28px 18px 60px;
+}
+.wrap{max-width:760px;margin:0 auto;}
+
+/* ---- Header ---- */
+header{display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:28px; flex-wrap:wrap;}
+.title-block h1{
+  font-family:'Fraunces', serif;
+  font-weight:700;
+  font-size:2.5rem;
+  margin:0;
+  letter-spacing:-0.01em;
+  color: var(--parchment);
+}
+.title-block .sub{
+  font-family:'Fraunces', serif;
+  font-style:italic;
+  font-weight:500;
+  color: var(--gold-bright);
+  font-size:1rem;
+  margin-top:2px;
+}
+.streak-badge{
+  display:flex; align-items:center; gap:8px;
+  background: rgba(184,135,63,0.12);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:8px 16px;
+  font-size:0.85rem;
+  color: var(--gold-bright);
+  white-space:nowrap;
+}
+.streak-flame{font-size:1rem;}
+
+/* ---- Progress overview ---- */
+.progress-card{
+  background: linear-gradient(160deg, rgba(242,234,217,0.06), rgba(242,234,217,0.02));
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:22px 24px;
+  margin-bottom:22px;
+  box-shadow: var(--shadow);
+}
+.progress-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px; flex-wrap:wrap; gap:6px;}
+.progress-top .big{font-family:'Fraunces', serif; font-size:1.6rem; font-weight:600; color: var(--parchment);}
+.progress-top .big span{color: var(--gold-bright);}
+.progress-top .label{font-size:0.8rem; letter-spacing:0.08em; text-transform:uppercase; color: rgba(242,234,217,0.55);}
+.bar-track{height:10px; border-radius:6px; background: rgba(0,0,0,0.3); overflow:hidden; display:flex;}
+.bar-seg{height:100%;}
+.bar-seg.mastered{background: var(--sage);}
+.bar-seg.review{background: var(--gold);}
+.bar-seg.learning{background: #7d8bb0;}
+.legend{display:flex; gap:18px; margin-top:10px; flex-wrap:wrap; font-size:0.78rem; color: rgba(242,234,217,0.65);}
+.legend .dot{display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; position:relative; top:-1px;}
+.legend .mastered .dot{background:var(--sage);}
+.legend .review .dot{background:var(--gold);}
+.legend .learning .dot{background:#7d8bb0;}
+.legend .new .dot{background: rgba(242,234,217,0.25);}
+
+/* ---- Action grid ---- */
+.actions{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:26px;}
+.actions .action-btn:last-child:nth-child(odd){grid-column: 1 / -1;}
+.action-btn{
+  background: rgba(242,234,217,0.04);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:18px 18px;
+  text-align:left;
+  cursor:pointer;
+  color: var(--parchment);
+  font-family:'Source Sans 3', sans-serif;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.action-btn:hover{background: rgba(242,234,217,0.09); transform: translateY(-2px); border-color: var(--gold);}
+.action-btn .a-title{font-family:'Fraunces', serif; font-weight:600; font-size:1.05rem; margin-bottom:4px; color: var(--gold-bright);}
+.action-btn .a-desc{font-size:0.82rem; color: rgba(242,234,217,0.6); line-height:1.4;}
+.action-btn.primary{
+  background: linear-gradient(135deg, var(--gold), #97662e);
+  border-color: transparent;
+  color: #1c1408;
+}
+.action-btn.primary .a-title{color:#1c1408;}
+.action-btn.primary .a-desc{color: rgba(28,20,8,0.72);}
+.action-btn.primary:hover{transform: translateY(-2px); filter:brightness(1.05);}
+
+/* ---- Section headers ---- */
+.section-label{
+  font-size:0.78rem; letter-spacing:0.12em; text-transform:uppercase;
+  color: var(--gold-bright); margin: 30px 0 12px; display:flex; align-items:center; gap:10px;
+}
+.section-label::after{content:''; flex:1; height:1px; background: var(--line);}
+
+/* ---- Practice screen ---- */
+.hidden{display:none !important;}
+#practice-screen{}
+.practice-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;}
+.back-btn{
+  background:none; border:1px solid var(--line); color: var(--parchment);
+  border-radius:8px; padding:8px 14px; cursor:pointer; font-size:0.85rem;
+  font-family:'Source Sans 3', sans-serif;
+}
+.back-btn:hover{border-color: var(--gold);}
+.queue-count{font-size:0.85rem; color: rgba(242,234,217,0.6);}
+
+.ribbon{
+  display:inline-block;
+  background: var(--gold);
+  color:#1c1408;
+  font-family:'Fraunces', serif;
+  font-weight:600;
+  font-size:0.95rem;
+  padding:8px 20px 8px 16px;
+  border-radius: 3px 3px 0 0;
+  position:relative;
+  margin-left:14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+.ribbon::after{
+  content:'';
+  position:absolute;
+  right:-9px; top:0;
+  border-style:solid;
+  border-width:0 9px 15px 0;
+  border-color: transparent #8a6329 transparent transparent;
+}
+
+.card-stage{
+  perspective: 1600px;
+  margin-bottom:20px;
+}
+.flashcard{
+  min-height:280px;
+  background: var(--parchment);
+  color: var(--ink);
+  border-radius: 4px 14px 14px 4px;
+  padding:38px 34px 30px;
+  position:relative;
+  box-shadow: var(--shadow);
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  border-left: 6px solid var(--gold);
+}
+.flashcard::before{
+  content:'';
+  position:absolute; left:0; top:10px; bottom:10px; width:6px;
+  background: repeating-linear-gradient(180deg, var(--gold) 0 10px, var(--gold-bright) 10px 20px);
+  opacity:0.35;
+}
+.card-mode-tag{
+  font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em;
+  color: #8a6329; margin-bottom:14px; font-weight:600;
+}
+.card-content{
+  font-family:'Fraunces', serif;
+  font-size:1.28rem;
+  line-height:1.55;
+  color: var(--ink);
+}
+.card-content.reference-display{
+  font-size:2rem;
+  font-weight:600;
+  color: var(--ink-soft);
+}
+.card-hint{
+  margin-top:20px; font-size:0.8rem; color:#8a6329; font-style:italic;
+  font-family:'Fraunces', serif;
+}
+.card-back{
+  border-top:1px dashed var(--line);
+  margin-top:18px; padding-top:16px;
+}
+.card-back .ref-small{
+  font-family:'Fraunces', serif; font-weight:600; color:#8a6329; font-size:0.95rem; margin-bottom:8px;
+}
+
+.rate-row{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:8px;}
+.rate-btn{
+  border:none; border-radius:10px; padding:14px 10px; cursor:pointer;
+  font-family:'Source Sans 3', sans-serif; font-weight:600; font-size:0.88rem;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+.rate-btn:hover{transform: translateY(-2px); filter:brightness(1.08);}
+.rate-btn.again{background: rgba(168,90,82,0.85); color:#fff;}
+.rate-btn.good{background: rgba(125,139,176,0.9); color:#fff;}
+.rate-btn.easy{background: var(--sage); color:#fff;}
+.flip-prompt{
+  text-align:center; font-size:0.85rem; color: rgba(242,234,217,0.55); margin-bottom:14px;
+}
+
+/* ---- Browse screen ---- */
+#browse-screen .filter-row{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;}
+.filter-chip{
+  background: rgba(242,234,217,0.05); border:1px solid var(--line); color: var(--parchment);
+  border-radius:999px; padding:6px 14px; font-size:0.8rem; cursor:pointer;
+}
+.filter-chip.active{background: var(--gold); color:#1c1408; border-color:transparent; font-weight:600;}
+.verse-row{
+  background: rgba(242,234,217,0.04); border:1px solid var(--line); border-radius:10px;
+  padding:14px 16px; margin-bottom:8px; cursor:pointer;
+}
+.verse-row:hover{background: rgba(242,234,217,0.08);}
+.verse-row .vr-top{display:flex; justify-content:space-between; align-items:center; gap:10px;}
+.verse-row .vr-ref{font-family:'Fraunces', serif; font-weight:600; color: var(--gold-bright);}
+.verse-row .vr-status{font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; padding:3px 9px; border-radius:999px;}
+.vr-status.new{background: rgba(242,234,217,0.1); color: rgba(242,234,217,0.55);}
+.vr-status.learning{background: rgba(125,139,176,0.25); color:#c3cbe6;}
+.vr-status.review{background: rgba(184,135,63,0.25); color: var(--gold-bright);}
+.vr-status.mastered{background: rgba(111,143,107,0.25); color:#a9c8a5;}
+.verse-row .vr-text{font-size:0.85rem; color: rgba(242,234,217,0.55); margin-top:6px; line-height:1.4;}
+
+.empty-state{
+  text-align:center; padding:50px 20px; color: rgba(242,234,217,0.6);
+}
+.empty-state .big-emoji{font-size:2.4rem; margin-bottom:12px;}
+
+/* ---- Fill in the blank ---- */
+.diff-grid{display:grid; grid-template-columns:1fr; gap:12px; max-width:440px; margin:0 auto;}
+.diff-card{
+  background: rgba(242,234,217,0.04); border:1px solid var(--line); border-radius:14px;
+  padding:18px 20px; cursor:pointer; text-align:left; color: var(--parchment);
+  font-family:'Source Sans 3', sans-serif;
+}
+.diff-card:hover{background: rgba(242,234,217,0.09); border-color: var(--gold);}
+.diff-card .d-title{font-family:'Fraunces', serif; font-weight:600; color: var(--gold-bright); margin-bottom:3px;}
+.diff-card .d-desc{font-size:0.82rem; color: rgba(242,234,217,0.6);}
+.diff-intro{text-align:center; margin-bottom:22px; color: rgba(242,234,217,0.7); font-size:0.9rem;}
+
+.blank-card{
+  background: var(--parchment);
+  color: var(--ink);
+  border-radius: 4px 14px 14px 4px;
+  padding:34px 30px 26px;
+  box-shadow: var(--shadow);
+  border-left: 6px solid var(--gold);
+  margin-bottom:18px;
+}
+.blank-verse{
+  font-family:'Fraunces', serif;
+  font-size:1.18rem;
+  line-height:2.3;
+}
+.blank-input{
+  font-family:'Fraunces', serif;
+  font-size:1.05rem;
+  border:none;
+  border-bottom:2px solid var(--gold);
+  background: rgba(184,135,63,0.08);
+  color: var(--ink);
+  text-align:center;
+  border-radius:3px 3px 0 0;
+  padding:1px 4px;
+  margin:0 2px;
+  outline:none;
+}
+.blank-input:focus{background: rgba(184,135,63,0.18);}
+.blank-input.correct{border-bottom-color: var(--sage); background: rgba(111,143,107,0.15); color:#3d5c39;}
+.blank-input.incorrect{border-bottom-color: var(--rose); background: rgba(168,90,82,0.15); color:#7a3a34; text-decoration: line-through; text-decoration-color: rgba(168,90,82,0.5);}
+.blank-correction{
+  font-family:'Source Sans 3', sans-serif; font-size:0.72rem; color: var(--rose);
+  font-weight:600; margin:0 3px;
+}
+.blank-toprow{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+.blank-ref-tag{font-family:'Fraunces', serif; font-weight:600; color:#8a6329; font-size:0.85rem;}
+.accuracy-line{
+  text-align:center; font-size:0.9rem; color: rgba(242,234,217,0.75); margin-bottom:14px;
+}
+.accuracy-line b{color: var(--gold-bright);}
+
+.reset-link{
+  display:block; text-align:center; margin-top:36px; font-size:0.78rem;
+  color: rgba(242,234,217,0.35); cursor:pointer; text-decoration:underline;
+}
+.reset-link:hover{color: rgba(242,234,217,0.6);}
+
+@media (max-width:520px){
+  .title-block h1{font-size:1.9rem;}
+  .actions{grid-template-columns:1fr;}
+  .flashcard{padding:28px 22px 24px;}
+  .card-content{font-size:1.1rem;}
+  .card-content.reference-display{font-size:1.5rem;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="title-block">
+      <h1>Scriptorium</h1>
+      <div class="sub">100 self-respecting verses, in ESV</div>
+    </div>
+    <div class="streak-badge"><span class="streak-flame">🕯️</span><span id="streak-text">0 day streak</span></div>
+  </header>
+
+  <!-- HOME -->
+  <div id="home-screen">
+    <div class="progress-card">
+      <div class="progress-top">
+        <div class="big"><span id="mastered-count">0</span> / 171 mastered</div>
+        <div class="label" id="due-label">0 due today</div>
+      </div>
+      <div class="bar-track">
+        <div class="bar-seg mastered" id="seg-mastered" style="width:0%"></div>
+        <div class="bar-seg review" id="seg-review" style="width:0%"></div>
+        <div class="bar-seg learning" id="seg-learning" style="width:0%"></div>
+      </div>
+      <div class="legend">
+        <span class="mastered"><span class="dot"></span>Mastered</span>
+        <span class="review"><span class="dot"></span>Review</span>
+        <span class="learning"><span class="dot"></span>Learning</span>
+        <span class="new"><span class="dot"></span>New</span>
+      </div>
+    </div>
+
+    <div class="section-label">Practice modes</div>
+    <div class="actions">
+      <button class="action-btn primary" id="btn-mode-flashcards">
+        <div class="a-title">Flash Cards</div>
+        <div class="a-desc">Read the verse and try to recall it from memory. Great for the first few passes.</div>
+      </button>
+      <button class="action-btn" id="btn-mode-blank">
+        <div class="a-title">Blank Words Game</div>
+        <div class="a-desc">Words are hidden — fill in what's missing. Moves you from recognition to recall.</div>
+      </button>
+      <button class="action-btn" id="btn-mode-firstletter">
+        <div class="a-title">Type First Letter</div>
+        <div class="a-desc">Type just the first letter of every word. Fast, active recall of the whole verse.</div>
+      </button>
+      <button class="action-btn" id="btn-mode-freetype">
+        <div class="a-title">Free Type</div>
+        <div class="a-desc">Type the entire verse from memory. For passages you're close to mastering.</div>
+      </button>
+    </div>
+
+    <div class="section-label">More</div>
+    <div class="actions">
+      <button class="action-btn" id="btn-browse" style="grid-column:1/-1;">
+        <div class="a-title">Browse the list</div>
+        <div class="a-desc">See every reference, filter by testament or status.</div>
+      </button>
+    </div>
+
+    <div class="section-label">Chapters to memorize in full</div>
+    <div style="font-size:0.88rem; line-height:1.9; color: rgba(242,234,217,0.75);">
+      Psalm 1, 8, 16, 23, 32, 51, 73, 139 &nbsp;·&nbsp; Isaiah 40, 53 &nbsp;·&nbsp; Matthew 5–7 &nbsp;·&nbsp; John 15 &nbsp;·&nbsp; Romans 6, 8, 12 &nbsp;·&nbsp; 1 Corinthians 13, 15 &nbsp;·&nbsp; 2 Corinthians 4 &nbsp;·&nbsp; Philippians 2, 3, 4 &nbsp;·&nbsp; Hebrews 11
+    </div>
+
+    <div class="reset-link" id="reset-link">Reset all progress</div>
+  </div>
+
+
+  <!-- PRACTICE -->
+  <div id="practice-screen" class="hidden">
+    <div class="practice-top">
+      <button class="back-btn" id="btn-back-1">← Home</button>
+      <div class="queue-count" id="queue-count"></div>
+    </div>
+
+    <div id="practice-body"></div>
+  </div>
+
+  <!-- BROWSE -->
+  <div id="browse-screen" class="hidden">
+    <div class="practice-top">
+      <button class="back-btn" id="btn-back-2">← Home</button>
+      <div class="queue-count" id="browse-count"></div>
+    </div>
+    <div class="filter-row" id="filter-row"></div>
+    <div id="browse-list"></div>
+  </div>
+
+</div>
+
+<script>
+const VERSES = [{"id": 0, "reference": "Exodus 19:4-6", "text": "You yourselves have seen what I did to the Egyptians, and how\u00a0I bore you on eagles' wings and brought you to myself.\u00a0Now therefore, if you will indeed obey my voice and keep my covenant, you shall be\u00a0my treasured possession among all peoples, for\u00a0all the earth is mine; and you shall be to me a\u00a0kingdom of priests and\u00a0a holy nation. These are the words that you shall speak to the people of Israel.\u201d", "testament": "OT"}, {"id": 1, "reference": "Deuteronomy 6:4-5", "text": "\u201cHear, O Israel:\u00a0The\u00a0Lord\u00a0our God, the\u00a0Lord\u00a0is one. You\u00a0shall love the\u00a0Lord\u00a0your God with all your heart and with all your soul and with all your might.", "testament": "OT"}, {"id": 2, "reference": "Joshua 1:7-9", "text": "Only be strong and\u00a0very courageous, being careful to do according to all the law\u00a0that Moses my servant commanded you.\u00a0Do not turn from it to the right hand or to the left, that you may have good success\u00a0wherever you go. This Book of the Law shall not depart from your mouth, but\u00a0you shall meditate on it day and night, so that you may be careful to do according to all that is written in it. For then you will make your way prosperous, and then you will have good success.\u00a0Have I not commanded you?\u00a0Be strong and courageous.\u00a0Do not be frightened, and do not be dismayed, for the\u00a0Lord\u00a0your God is with you wherever you go.\u201d", "testament": "OT"}, {"id": 3, "reference": "1 Samuel 12:23", "text": "Moreover, as for me, far be it from me that I should sin against the\u00a0Lord\u00a0by ceasing\u00a0to pray for you,\u00a0and I will instruct you in the good and the right way.", "testament": "OT"}, {"id": 4, "reference": "1 Samuel 15:22", "text": "And Samuel said, \u201cHas the\u00a0Lord\u00a0as great delight in burnt offerings and sacrifices, as in obeying the voice of the\u00a0Lord? Behold,\u00a0to obey is better than sacrifice, and to listen than the fat of rams.", "testament": "OT"}, {"id": 5, "reference": "2 Chronicles 7:14", "text": "If my people who are called by my name\u00a0humble themselves, and pray and seek my face and turn from their wicked ways, then I will hear from heaven and will forgive their sin and heal their land.", "testament": "OT"}, {"id": 6, "reference": "2 Chronicles 16:9", "text": "For the eyes of the\u00a0Lord\u00a0run to and fro throughout the whole earth, to give strong support to those\u00a0whose heart is blameless\u00a0toward him.\u00a0You have done foolishly in this, for from now on\u00a0you will have wars.\u201d", "testament": "OT"}, {"id": 7, "reference": "Job 19:25-27", "text": "For I\u00a0know that my\u00a0Redeemer lives, and at the last he will stand upon the\u00a0earth. And after my skin has been thus destroyed, yet in\u00a0my flesh I shall\u00a0see God, whom I shall see for myself, and my eyes shall behold, and not\u00a0another. My heart\u00a0faints within me!", "testament": "OT"}, {"id": 8, "reference": "Job 42:5-6", "text": "I had heard of you by the hearing of the ear, but now my eye sees you; therefore I despise myself, and repent\u00a0in\u00a0dust and ashes.\u201d", "testament": "OT"}, {"id": 9, "reference": "Psalm 16:2-3", "text": "I say to the\u00a0Lord, \u201cYou are my Lord; I have no good apart from you.\u201d As for\u00a0the saints in the land, they are the excellent ones, in whom is all my delight.", "testament": "OT"}, {"id": 10, "reference": "Psalm 34:8-9", "text": "Oh,\u00a0taste and see that\u00a0the\u00a0Lord\u00a0is good! Blessed is the man who takes refuge in him! Oh, fear the\u00a0Lord, you his saints, for those who fear him have no lack!", "testament": "OT"}, {"id": 11, "reference": "Psalm 37:4-7", "text": "Delight yourself in the\u00a0Lord, and he will\u00a0give you the desires of your heart. Commit your way to the\u00a0Lord; trust in him, and he will act. He will bring forth your righteousness as the light, and your justice as\u00a0the noonday. Be still before the\u00a0Lord\u00a0and wait patiently for him; fret not yourself over the one who\u00a0prospers in his way, over the man who carries out evil devices!", "testament": "OT"}, {"id": 12, "reference": "Psalm 46:10", "text": "\u201cBe still, and know that I am God. I will be exalted among the nations, I will be exalted in the earth!\u201d", "testament": "OT"}, {"id": 13, "reference": "Psalm 51:10-12", "text": "Create in me a\u00a0clean heart, O God, and\u00a0renew a right\u00a0spirit within me. Cast me not away from your presence, and take not\u00a0your Holy Spirit from me. Restore to me the joy of your salvation, and uphold me with a willing spirit.", "testament": "OT"}, {"id": 14, "reference": "Psalm 84:10", "text": "For a day\u00a0in your courts is better than a thousand elsewhere. I would rather be\u00a0a doorkeeper in the house of my God than dwell in the tents of wickedness.", "testament": "OT"}, {"id": 15, "reference": "Psalm 103:8-12", "text": "The\u00a0Lord\u00a0is\u00a0merciful and gracious, slow to anger and abounding in steadfast love. He will not always chide, nor will he\u00a0keep his anger forever. He does not deal with us\u00a0according to our sins, nor repay us according to our iniquities. For\u00a0as high as the heavens are above the earth, so great is his\u00a0steadfast love toward\u00a0those who fear him; as far as the east is from the west, so far does he\u00a0remove our transgressions from us.", "testament": "OT"}, {"id": 16, "reference": "Psalm 119:11", "text": "I have\u00a0stored up your word in my heart, that I might not sin against you.", "testament": "OT"}, {"id": 17, "reference": "Psalm 119:105", "text": "Your word is a lamp to my feet and a light to my path.", "testament": "OT"}, {"id": 18, "reference": "Proverbs 3:5-6", "text": "Trust in the\u00a0Lord\u00a0with all your heart, and\u00a0do not lean on your own understanding. In all your ways\u00a0acknowledge him, and he\u00a0will make straight your paths.", "testament": "OT"}, {"id": 19, "reference": "Isaiah 1:18", "text": "\u201cCome now,\u00a0let us reason\u00a0together, says the Lord: though your sins are like scarlet, they shall be as\u00a0white as snow; though they are red like crimson, they shall become like wool.", "testament": "OT"}, {"id": 20, "reference": "Isaiah 40:6-8", "text": "A voice says, \u201cCry!\u201d And I said,\u00a0\u201cWhat shall I cry?\u201d All flesh is grass, and all its beauty\u00a0is like the flower of the field. The grass withers, the flower fades when the breath of the\u00a0Lord\u00a0blows on it; surely the people are grass. The grass withers, the flower fades, but the word of our God will stand forever.", "testament": "OT"}, {"id": 21, "reference": "Isaiah 40:28-31", "text": "Have you not known? Have you not heard? The\u00a0Lord\u00a0is\u00a0the everlasting God, the Creator of the ends of the earth. He does not faint or grow weary; his understanding is unsearchable. He gives power to the faint, and to him who has no might he increases strength. Even youths shall faint and be weary, and young men shall fall exhausted; but\u00a0they who wait for the\u00a0Lord\u00a0shall renew their strength; they shall mount up with wings\u00a0like eagles; they shall run and not be weary; they shall walk and not faint.", "testament": "OT"}, {"id": 22, "reference": "Isaiah 54:2-3", "text": "\u201cEnlarge the place of your tent, and let the curtains of your habitations be stretched out; do not hold back; lengthen your cords and strengthen your stakes. For you will spread abroad to the right and to the left, and your offspring will possess the nations and will people the desolate cities.", "testament": "OT"}, {"id": 23, "reference": "Isaiah 55:1-3a", "text": "\u201cCome, everyone who thirsts, come to the waters; and he who has no money, come, buy and eat! Come, buy wine and milk without money and without price. Why do you spend your money for that which is not bread, and your labor for that which does not satisfy? Listen diligently to me, and eat what is good, and delight yourselves in rich food. Incline your ear, and come to me; hear, that your soul may live;", "testament": "OT"}, {"id": 24, "reference": "Isaiah 55:8-9", "text": "For my thoughts are not your thoughts, neither are your ways my ways, declares the Lord. For as the heavens are higher than the earth, so are my ways higher than your ways and my thoughts than your thoughts.", "testament": "OT"}, {"id": 25, "reference": "Isaiah 57:15", "text": "For thus says\u00a0the One who is high and lifted up, who inhabits eternity, whose name is\u00a0Holy: \u201cI dwell in the high and holy place, and also\u00a0with him who is of a contrite and lowly spirit, to revive the spirit of the lowly, and to revive the heart of the contrite.", "testament": "OT"}, {"id": 26, "reference": "Isaiah 66:1-2", "text": "Thus says the\u00a0Lord: \u201cHeaven is my throne, and the earth is my footstool; what is the house that you would build for me, and what is the place of my rest? All these things my hand has made, and so all these things came to be, declares the\u00a0Lord. But this is the one to whom I will look: he who is humble and contrite in spirit and trembles at my word.", "testament": "OT"}, {"id": 27, "reference": "Jeremiah 9:23-24", "text": "Thus says the\u00a0Lord:\u00a0\u201cLet not the wise man boast in his wisdom, let not the mighty man boast in his might, let not the rich man boast in his riches,\u00a0but\u00a0let him who boasts boast in this, that he understands and knows me, that I am the\u00a0Lord\u00a0who practices steadfast love, justice, and righteousness in the earth.\u00a0For in these things I delight, declares the\u00a0Lord.\u201d", "testament": "OT"}, {"id": 28, "reference": "Jeremiah 29:11-13", "text": "For I know the plans I have for you, declares the\u00a0Lord, plans for welfare\u00a0and not for evil,\u00a0to give you a future and a hope.\u00a0Then you will call upon me and come and pray to me,\u00a0and I will hear you.\u00a0You will seek me and find me, when you seek me\u00a0with all your heart.", "testament": "OT"}, {"id": 29, "reference": "Jeremiah 33:3", "text": "Call to me and I will answer you,\u00a0and will tell you great and hidden things that you have not known.", "testament": "OT"}, {"id": 30, "reference": "Lamentations 3:21-23", "text": "But this I call to mind, and\u00a0therefore I have hope: The steadfast love of the\u00a0Lord\u00a0never ceases; his mercies never come to an end; they are new\u00a0every morning; great is your faithfulness.", "testament": "OT"}, {"id": 31, "reference": "Joel 2:13", "text": "Rend your hearts and not\u00a0your garments.\u201d Return to the\u00a0Lord\u00a0your God, for he is gracious and merciful, slow to anger, and abounding in steadfast love; and he relents over disaster.", "testament": "OT"}, {"id": 32, "reference": "Micah 6:8", "text": "He has told you, O man, what is good; and\u00a0what does the\u00a0Lord\u00a0require of you but to do justice, and to love kindness, and to\u00a0walk humbly with your God?", "testament": "OT"}, {"id": 33, "reference": "Habakkuk 3:17-18", "text": "Though the fig tree should not blossom, nor fruit be on the vines, the produce of the olive fail and the fields yield no food, the flock be cut off from the fold and there be no herd in the stalls, yet I will rejoice in the\u00a0Lord; I will take joy in the God of my salvation.", "testament": "OT"}, {"id": 34, "reference": "Zechariah 4:6b", "text": "Not by might, nor by power, but by my Spirit, says the\u00a0Lord\u00a0of hosts.", "testament": "OT"}, {"id": 35, "reference": "Zephaniah 3:17", "text": "The\u00a0Lord\u00a0your God is in your midst, a mighty one who will save; he will rejoice over you with gladness; he will quiet you by his love; he will exult over you with loud singing.", "testament": "OT"}, {"id": 36, "reference": "Malachi 3:10", "text": "Bring the full tithe into the storehouse, that there may be food in my house. And thereby\u00a0put me to the test, says the\u00a0Lord\u00a0of hosts, if I will not open\u00a0the windows of heaven for you and pour down for you a blessing until there is no more need.", "testament": "OT"}, {"id": 37, "reference": "Matthew 6:19-21", "text": "\u201cDo not lay up for yourselves treasures on earth, where moth and rust\u00a0destroy and where thieves\u00a0break in and steal, but lay up for yourselves treasures in heaven, where neither moth nor rust destroys and where thieves do not break in and steal. For where your treasure is, there your heart will be also.", "testament": "NT"}, {"id": 38, "reference": "Matthew 6:24", "text": "No one can serve two masters, for either he will hate the one and love the other, or he will be devoted to the one and despise the other. You cannot serve God and money.", "testament": "NT"}, {"id": 39, "reference": "Matthew 6:33-34", "text": "But\u00a0seek first\u00a0the kingdom of God and his righteousness, and all these things will be added to you. Therefore do not be anxious about tomorrow, for tomorrow will be anxious for itself. Sufficient for the day is its own trouble.", "testament": "NT"}, {"id": 40, "reference": "Matthew 7:7-8", "text": "Ask,\u00a0and it will be given to you;\u00a0seek, and you will find; knock, and it will be opened to you. For everyone who asks receives, and the one who seeks finds, and to the one who knocks it will be opened.", "testament": "NT"}, {"id": 41, "reference": "Matthew 7:13-14", "text": "Enter by the narrow gate. For the gate is wide and the way is easy\u00a0that leads to destruction, and those who enter by it are many.\u00a0For the gate is narrow and\u00a0the way is hard that leads to life, and\u00a0those who find it are few.", "testament": "NT"}, {"id": 42, "reference": "Matthew 11:28-29", "text": "Come to\u00a0me, all who labor and are\u00a0heavy laden, and I will give you rest.\u00a0Take my yoke upon you, and\u00a0learn from me, for I am\u00a0gentle and lowly in heart, and\u00a0you will find rest for your souls.", "testament": "NT"}, {"id": 43, "reference": "Matthew 22:37-39", "text": "And he said to him,\u00a0\u201cYou shall love the Lord your God with all your heart and with all your soul and with all your mind.\u00a0This is the great and first commandment.\u00a0And a second is like it:\u00a0You shall love your neighbor as yourself.", "testament": "NT"}, {"id": 44, "reference": "Matthew 28:18-20", "text": "And Jesus came and said to them,\u00a0\u201cAll authority\u00a0in heaven and on earth has been given to me.\u00a0Go therefore and\u00a0make disciples of\u00a0all nations,\u00a0baptizing them in\u00a0the name of the Father and of the Son and of the Holy Spirit,\u00a0teaching them\u00a0to observe all that\u00a0I have commanded you. And behold,\u00a0I am with you always, to\u00a0the end of the age.\u201d", "testament": "NT"}, {"id": 45, "reference": "Mark 10:43-45", "text": "But\u00a0it shall not be so among you. But whoever would be great among you must be your servant, and whoever would be first among you must be\u00a0slave\u00a0of all.\u00a0For even the Son of Man came not to be served but\u00a0to serve, and\u00a0to give his life as a ransom for\u00a0many.\u201d", "testament": "NT"}, {"id": 46, "reference": "Luke 9:23-25", "text": "And he said to all,\u00a0\u201cIf anyone would come after me, let him\u00a0deny himself and\u00a0take up his cross\u00a0daily and follow me.\u201d For\u00a0whoever would save his life will lose it, but whoever loses his life for my sake will save it.\u00a0For what does it profit a man if he gains the whole world and loses or forfeits himself?\u201d", "testament": "NT"}, {"id": 47, "reference": "Luke 10:20", "text": "Nevertheless, do not rejoice in this, that the spirits are subject to you, but rejoice that\u00a0your names are written in heaven.\u201d", "testament": "NT"}, {"id": 48, "reference": "Luke 11:13", "text": "If you then,\u00a0who are evil, know how to give good gifts to your children, how much more will the heavenly Father give the Holy Spirit to those who ask him!\u201d", "testament": "NT"}, {"id": 49, "reference": "Luke 12:32", "text": "Fear not, little\u00a0flock, for\u00a0it is your Father's good pleasure to give you\u00a0the kingdom.", "testament": "NT"}, {"id": 50, "reference": "Luke 12:48b", "text": "Everyone to whom much was given, of him much will be required, and from him to whom they entrusted much, they will demand the more.", "testament": "NT"}, {"id": 51, "reference": "Luke 14:26", "text": "If anyone comes to me and\u00a0does not hate his own father and mother and wife and children and brothers and sisters,\u00a0yes, and even his own life, he cannot be my disciple.", "testament": "NT"}, {"id": 52, "reference": "Luke 17:10", "text": "So you also, when you have done all that you were commanded, say, \u2018We are\u00a0unworthy servants;\u00a0we have only done what was our duty.\u2019\u201d", "testament": "NT"}, {"id": 53, "reference": "John 1:12", "text": "But to all who did receive him,\u00a0who believed in his name,\u00a0he gave the right\u00a0to become\u00a0children of God", "testament": "NT"}, {"id": 54, "reference": "John 1:14", "text": "And\u00a0the Word\u00a0became flesh and\u00a0dwelt among us,\u00a0and we have seen his glory, glory as of the only Son from the Father, full of\u00a0grace and\u00a0truth.", "testament": "NT"}, {"id": 55, "reference": "John 3:16", "text": "For\u00a0God so loved\u00a0the world,\u00a0that he gave his only Son, that whoever believes in him should not\u00a0perish but have eternal life.", "testament": "NT"}, {"id": 56, "reference": "John 5:44", "text": "How can you believe, when you receive glory from one another and\u00a0do not seek the glory that comes from\u00a0the only God?", "testament": "NT"}, {"id": 57, "reference": "John 6:68-69", "text": "Simon Peter answered him, \u201cLord, to whom shall we go? You have\u00a0the words of eternal life, and\u00a0we have believed, and have come to know, that\u00a0you are\u00a0the Holy One of God.\u201d", "testament": "NT"}, {"id": 58, "reference": "John 8:31-32", "text": "So Jesus said to the Jews who had believed him,\u00a0\u201cIf you abide in my word, you are truly my disciples, and you will\u00a0know the truth, and the truth\u00a0will set you free.\u201d", "testament": "NT"}, {"id": 59, "reference": "John 10:10-11", "text": "The thief comes only to steal and\u00a0kill and destroy. I came that they may have life and have it abundantly.\u00a0I am the good shepherd. The good shepherd\u00a0lays down his life for the sheep.", "testament": "NT"}, {"id": 60, "reference": "John 10:27-30", "text": "My sheep hear my voice, and I know them, and they follow me.\u00a0I give them eternal life, and\u00a0they will never perish, and\u00a0no one will snatch them out of my hand.\u00a0My Father,\u00a0who has given them to me,\u00a0is greater than all, and no one is able to snatch them out of\u00a0the Father's hand. I and the Father are one.", "testament": "NT"}, {"id": 61, "reference": "John 12:24-25", "text": "Truly, truly, I say to you,\u00a0unless a grain of wheat falls into the earth and dies, it remains alone; but if it dies, it bears much fruit. Whoever loves his life loses it, and whoever\u00a0hates his life in this world will keep it for eternal life.", "testament": "NT"}, {"id": 62, "reference": "John 13:34-35", "text": "A new commandment\u00a0I give to you,\u00a0that you love one another:\u00a0just as I have loved you, you also are to love one another.\u00a0By this all people will know that you are my disciples, if you have love for one another.\u201d", "testament": "NT"}, {"id": 63, "reference": "John 14:1-3", "text": "Let not your hearts be troubled.\u00a0Believe in God; believe also in me.\u00a0In\u00a0my Father's house are many rooms. If it were not so, would I have told you that\u00a0I go to prepare a place for you? And if I go and prepare a place for you, I will come again and will take you\u00a0to myself, that\u00a0where I am you may be also.", "testament": "NT"}, {"id": 64, "reference": "John 14:6", "text": "Jesus said to him,\u00a0\u201cI am\u00a0the way, and the truth, and\u00a0the life. No one comes to the Father except through me.", "testament": "NT"}, {"id": 65, "reference": "John 14:27", "text": "Peace I leave with you;\u00a0my peace I give to you. Not as the world gives do I give to you.\u00a0Let not your hearts be troubled, neither\u00a0let them be afraid.", "testament": "NT"}, {"id": 66, "reference": "John 15:5", "text": "I am the vine;\u00a0you are the branches. Whoever abides in me and I in him, he it is that\u00a0bears much fruit, for apart from me you can do nothing.", "testament": "NT"}, {"id": 67, "reference": "John 16:33", "text": "I have said these things to you, that\u00a0in me you may have peace.\u00a0In the world you will have\u00a0tribulation. But\u00a0take heart;\u00a0I have overcome the world.", "testament": "NT"}, {"id": 68, "reference": "Acts 1:8", "text": "But you will receive\u00a0power\u00a0when the Holy Spirit has come upon you, and\u00a0you will be\u00a0my witnesses in Jerusalem and in all Judea and\u00a0Samaria, and\u00a0to the end of the earth.", "testament": "NT"}, {"id": 69, "reference": "Acts 3:19", "text": "Repent therefore, and\u00a0turn back, that\u00a0your sins may be blotted out.", "testament": "NT"}, {"id": 70, "reference": "Acts 4:12", "text": "And there is\u00a0salvation\u00a0in no one else, for\u00a0there is no other\u00a0name under heaven given among men\u00a0by which we must be saved.", "testament": "NT"}, {"id": 71, "reference": "Acts 20:24", "text": "But\u00a0I do not account my life of any value nor as precious to myself, if only\u00a0I may finish my course and\u00a0the ministry\u00a0that I received from the Lord Jesus,\u00a0to testify to the gospel of\u00a0the grace of God.", "testament": "NT"}, {"id": 72, "reference": "Romans 1:16", "text": "For\u00a0I am not ashamed of the gospel, for it is\u00a0the power of God for salvation to everyone who believes, to the Jew first and also to\u00a0the Greek.", "testament": "NT"}, {"id": 73, "reference": "Romans 2:4", "text": "Or do you presume on\u00a0the riches of his kindness and forbearance and\u00a0patience,\u00a0not knowing that God's kindness is meant to lead you to repentance?", "testament": "NT"}, {"id": 74, "reference": "Romans 3:23", "text": "For all have sinned and fall short of the glory of God.", "testament": "NT"}, {"id": 75, "reference": "Romans 5:6-10", "text": "For\u00a0while we were still weak, at the right time\u00a0Christ died for the ungodly. For one will scarcely die for a righteous person\u2014though perhaps for a good person one would dare even to die \u2014\u00a0but\u00a0God shows his love for us in that\u00a0while we were still sinners, Christ died for us.\u00a0Since, therefore, we have now been justified by his blood, much more shall we be saved by him from\u00a0the wrath of God.\u00a0For if\u00a0while we were enemies\u00a0we were reconciled to God by the death of his Son, much more, now that we are reconciled, shall we be saved by\u00a0his life.", "testament": "NT"}, {"id": 76, "reference": "Romans 6:12-13", "text": "Let not\u00a0sin therefore reign in your mortal body, to make you obey its passions. Do not present your members to sin as instruments for unrighteousness, but\u00a0present yourselves to God as those who have been brought from death to life, and your members to God as instruments for righteousness.", "testament": "NT"}, {"id": 77, "reference": "Romans 6:23", "text": "For the wages of sin is death, but the free gift of God is eternal life in Christ Jesus our Lord.", "testament": "NT"}, {"id": 78, "reference": "Romans 8:1-2", "text": "There is therefore now no condemnation for those who are in Christ Jesus. For the law of\u00a0the Spirit of life\u00a0has set you\u00a0free in Christ Jesus from the law of sin and death.", "testament": "NT"}, {"id": 79, "reference": "Romans 8:15-16", "text": "For\u00a0you did not receive\u00a0the spirit of slavery to fall back into fear, but you have received the Spirit of\u00a0adoption as sons, by whom we cry,\u00a0\u201cAbba! Father!\u201d\u00a0The Spirit himself bears witness with our spirit that we are children of God.", "testament": "NT"}, {"id": 80, "reference": "Romans 8:28", "text": "And we know that for those who love God all things work together\u00a0for good,\u00a0for\u00a0those who are called according to his purpose.", "testament": "NT"}, {"id": 81, "reference": "Romans 8:37-39", "text": "No, in all these things we are more than\u00a0conquerors through\u00a0him who loved us.\u00a0For I am sure that neither death nor life, nor angels nor rulers, nor things present nor things to come, nor powers,\u00a0nor height nor depth, nor anything else in all creation, will be able to separate us from the love of God in Christ Jesus our Lord.", "testament": "NT"}, {"id": 82, "reference": "Romans 10:9-10", "text": "Because, if\u00a0you confess with your mouth that Jesus is Lord and\u00a0believe in your heart\u00a0that God raised him from the dead, you will be saved.\u00a0For with the heart one believes and is justified, and with the mouth one confesses and is saved.", "testament": "NT"}, {"id": 83, "reference": "Romans 12:1-2", "text": "I appeal to you therefore, brothers,\u00a0by the mercies of God,\u00a0to present your bodies\u00a0as a living sacrifice, holy and acceptable to God, which is your spiritual worship. Do not be conformed to this world,\u00a0but be transformed by\u00a0the renewal of your mind, that by testing you may discern what is the will of God, what is good and acceptable and perfect.", "testament": "NT"}, {"id": 84, "reference": "Romans 13:8", "text": "Owe no one anything, except to love each other, for\u00a0the one who loves another has fulfilled the law.", "testament": "NT"}, {"id": 85, "reference": "Romans 14:8", "text": "For if we live, we live to the Lord, and if we die, we die to the Lord. So then,\u00a0whether we live or whether we die, we are the Lord's.", "testament": "NT"}, {"id": 86, "reference": "1 Corinthians 1:18", "text": "For the word of the cross is\u00a0folly to\u00a0those who are perishing, but to us\u00a0who are being saved it is\u00a0the power of God.", "testament": "NT"}, {"id": 87, "reference": "1 Corinthians 2:2", "text": "For I decided to know nothing among you except\u00a0Jesus Christ and him crucified.", "testament": "NT"}, {"id": 88, "reference": "1 Corinthians 2:14", "text": "The natural person does not accept the things of the Spirit of God, for they are\u00a0folly to him, and\u00a0he is not able to understand them because they are spiritually discerned.", "testament": "NT"}, {"id": 89, "reference": "1 Corinthians 6:19-20", "text": "Or\u00a0do you not know that your body is a temple of the Holy Spirit within you, whom you have from God?\u00a0You are not your own,\u00a0for you were bought with a price.\u00a0So glorify God in your body.", "testament": "NT"}, {"id": 90, "reference": "1 Corinthians 9:22b", "text": "I have become all things to all people, that\u00a0by all means I might save some.", "testament": "NT"}, {"id": 91, "reference": "1 Corinthians 9:26-27", "text": "So I do not run aimlessly; I\u00a0do not box as one\u00a0beating the air. But I discipline my body and\u00a0keep it under control,\u00a0lest after preaching to others\u00a0I myself should be disqualified.", "testament": "NT"}, {"id": 92, "reference": "1 Corinthians 10:13", "text": "No temptation has overtaken you that is not common to man.\u00a0God is faithful, and\u00a0he will not let you be tempted beyond your ability, but with the temptation he will also provide the way of escape, that you may be able to endure it.", "testament": "NT"}, {"id": 93, "reference": "1 Corinthians 12:18", "text": "But as it is,\u00a0God arranged the members in the body, each one of them,\u00a0as he chose.", "testament": "NT"}, {"id": 94, "reference": "1 Corinthians 13:13", "text": "So now faith, hope, and love abide, these three; but the greatest of these is love.", "testament": "NT"}, {"id": 95, "reference": "1 Corinthians 15:58", "text": "Therefore, my beloved brothers, be steadfast, immovable, always abounding in\u00a0the work of the Lord, knowing that in the Lord\u00a0your labor is not in vain.", "testament": "NT"}, {"id": 96, "reference": "2 Corinthians 3:5", "text": "Not that we are sufficient in ourselves to claim anything as coming from us, but\u00a0our sufficiency is from God.", "testament": "NT"}, {"id": 97, "reference": "2 Corinthians 3:17", "text": "Now the Lord\u00a0is the Spirit, and where\u00a0the Spirit of the Lord is, there is\u00a0freedom.", "testament": "NT"}, {"id": 98, "reference": "2 Corinthians 4:4", "text": "In their case\u00a0the god of this world\u00a0has blinded the minds of the unbelievers, to keep them from seeing\u00a0the light of the gospel of the glory of Christ,\u00a0who is the image of God.", "testament": "NT"}, {"id": 99, "reference": "2 Corinthians 4:7", "text": "But we have this treasure in\u00a0jars of clay,\u00a0to show that the surpassing power belongs to God and not to us.", "testament": "NT"}, {"id": 100, "reference": "2 Corinthians 4:16-18", "text": "So we do not lose heart.\u00a0Though our outer self\u00a0is wasting away,\u00a0our inner self\u00a0is being renewed day by day. For\u00a0this light momentary affliction is preparing for us an eternal weight of glory beyond all comparison, as we look not to the things that are seen but to the things that are unseen. For the things that are seen are transient, but the things that are unseen are eternal.", "testament": "NT"}, {"id": 101, "reference": "2 Corinthians 5:7", "text": "For\u00a0we walk by faith, not\u00a0by sight.", "testament": "NT"}, {"id": 102, "reference": "2 Corinthians 5:14", "text": "For the love of Christ\u00a0controls us, because we have concluded this: that\u00a0one has died for all, therefore all have died.", "testament": "NT"}, {"id": 103, "reference": "2 Corinthians 5:17", "text": "Therefore, if anyone is\u00a0in Christ, he is\u00a0a new creation. The old has passed away; behold, the new has come.", "testament": "NT"}, {"id": 104, "reference": "2 Corinthians 6:14", "text": "Do not be unequally yoked with unbelievers. For\u00a0what partnership has righteousness with lawlessness? Or\u00a0what fellowship has light with darkness?", "testament": "NT"}, {"id": 105, "reference": "2 Corinthians 7:10", "text": "For\u00a0godly grief produces a repentance that leads to salvation without regret, whereas\u00a0worldly grief produces death.", "testament": "NT"}, {"id": 106, "reference": "2 Corinthians 9:7", "text": "Each one must give as he has decided in his heart,\u00a0not reluctantly or under compulsion, for\u00a0God loves a cheerful giver.", "testament": "NT"}, {"id": 107, "reference": "2 Corinthians 11:14", "text": "And no wonder, for even Satan disguises himself as\u00a0an angel of light.", "testament": "NT"}, {"id": 108, "reference": "2 Corinthians 12:9-10", "text": "But he said to me,\u00a0\u201cMy grace is sufficient for you, for\u00a0my power is made perfect in weakness.\u201d\u00a0Therefore I will boast all the more gladly of my weaknesses, so that\u00a0the power of Christ may rest upon me.\u00a0For the sake of Christ, then,\u00a0I am content with weaknesses, insults, hardships, persecutions, and calamities. For\u00a0when I am weak, then I am strong.", "testament": "NT"}, {"id": 109, "reference": "Galatians 1:10", "text": "For am I now seeking the approval of man, or of God? Or am I trying\u00a0to please man? If I were still trying to please man, I would not be a\u00a0servant\u00a0of Christ.", "testament": "NT"}, {"id": 110, "reference": "Galatians 2:20", "text": "I have been\u00a0crucified with Christ. It is no longer I who live, but Christ who lives\u00a0in me. And the life I now live in the flesh I live by faith in the Son of God,\u00a0who loved me and\u00a0gave himself for me.", "testament": "NT"}, {"id": 111, "reference": "Galatians 5:16-17", "text": "But I say,\u00a0walk by the Spirit, and you will not gratify\u00a0the desires of the flesh.\u00a0For\u00a0the desires of the flesh are against the Spirit, and the desires of the Spirit are against the flesh, for these are opposed to each other,\u00a0to keep you from doing the things you want to do.", "testament": "NT"}, {"id": 112, "reference": "Galatians 5:22-23", "text": "But\u00a0the fruit of the Spirit is\u00a0love, joy, peace, patience, kindness, goodness, faithfulness,\u00a0gentleness,\u00a0self-control;\u00a0against such things there is no law.", "testament": "NT"}, {"id": 113, "reference": "Galatians 6:2", "text": "Bear one another's burdens, and\u00a0so fulfill\u00a0the law of Christ.", "testament": "NT"}, {"id": 114, "reference": "Galatians 6:7-9", "text": "Do not be deceived: God is not mocked, for\u00a0whatever one sows, that will he also reap.\u00a0For\u00a0the one who sows to his own flesh\u00a0will from the flesh reap corruption, but\u00a0the one who sows to the Spirit will from the Spirit reap eternal life.\u00a0And\u00a0let us not grow weary of doing good, for in due season we will reap,\u00a0if we do not give up.", "testament": "NT"}, {"id": 115, "reference": "Galatians 6:14", "text": "But far be it from me to boast\u00a0except in the cross of our Lord Jesus Christ, by which\u00a0the world\u00a0has been crucified to me, and I to the world.", "testament": "NT"}, {"id": 116, "reference": "Ephesians 1:3", "text": "Blessed be\u00a0the God and Father of our Lord Jesus Christ, who has blessed us in Christ with every spiritual blessing\u00a0in the heavenly places.", "testament": "NT"}, {"id": 117, "reference": "Ephesians 2:8-10", "text": "For\u00a0by grace you have been saved\u00a0through faith. And this is\u00a0not your own doing;\u00a0it is the gift of God,\u00a0not a result of works,\u00a0so that no one may boast.\u00a0For\u00a0we are his workmanship, created in Christ Jesus\u00a0for good works, which God prepared beforehand,\u00a0that we should walk in them.", "testament": "NT"}, {"id": 118, "reference": "Ephesians 2:14", "text": "For\u00a0he himself is our peace,\u00a0who has made us both one and has broken down\u00a0in his flesh the dividing wall of hostility.", "testament": "NT"}, {"id": 119, "reference": "Ephesians 3:16-21", "text": "That according to\u00a0the riches of his glory\u00a0he may grant you to be strengthened with power through his Spirit\u00a0in your inner being,\u00a0so that Christ may dwell in your hearts through faith\u2014that you, being\u00a0rooted and\u00a0grounded in love,\u00a0may have strength to\u00a0comprehend with all the saints what is the breadth and length and\u00a0height and depth,\u00a0and to know the love of Christ\u00a0that surpasses knowledge, that\u00a0you may be filled with all\u00a0the fullness of God. Now to\u00a0him who is able to do far more abundantly than all that we ask or think,\u00a0according to the power at work within us,\u00a0to him be glory in the church and in Christ Jesus throughout all generations, forever and ever. Amen.", "testament": "NT"}, {"id": 120, "reference": "Ephesians 4:11-12", "text": "And\u00a0he gave the\u00a0apostles, the prophets, the\u00a0evangelists, the\u00a0shepherds\u00a0and teachers, to equip the saints for the work of ministry, for\u00a0building up\u00a0the body of Christ.", "testament": "NT"}, {"id": 121, "reference": "Ephesians 4:22-24", "text": "To\u00a0put off\u00a0your old self,\u00a0which belongs to your former manner of life and is corrupt through\u00a0deceitful desires, and\u00a0to be renewed in the spirit of your minds,\u00a0and to put on\u00a0the new self,\u00a0created after the likeness of God in true righteousness and holiness.", "testament": "NT"}, {"id": 122, "reference": "Ephesians 5:1-2", "text": "Therefore be imitators of God, as beloved children. And\u00a0walk in love,\u00a0as Christ loved us and\u00a0gave himself up for us, a\u00a0fragrant\u00a0offering and sacrifice to God.", "testament": "NT"}, {"id": 123, "reference": "Ephesians 5:11", "text": "Take no part in the\u00a0unfruitful\u00a0works of darkness, but instead\u00a0expose them.", "testament": "NT"}, {"id": 124, "reference": "Ephesians 5:15-16", "text": "Look carefully then how you walk, not as unwise but as wise,\u00a0making the best use of the time, because\u00a0the days are evil.", "testament": "NT"}, {"id": 125, "reference": "Ephesians 6:10-12", "text": "Finally,\u00a0be strong in the Lord and in\u00a0the strength of his might.\u00a0Put on\u00a0the whole armor of God, that you may be able to stand against\u00a0the schemes of the devil. For\u00a0we do not wrestle against flesh and blood, but against\u00a0the rulers, against the authorities, against\u00a0the cosmic powers over\u00a0this present darkness, against\u00a0the spiritual forces of evil\u00a0in the heavenly places.", "testament": "NT"}, {"id": 126, "reference": "Philippians 1:6", "text": "And I am sure of this, that he who began\u00a0a good work in you\u00a0will bring it to completion at\u00a0the day of Jesus Christ.", "testament": "NT"}, {"id": 127, "reference": "Philippians 1:21", "text": "For to me\u00a0to live is Christ, and to die is gain.", "testament": "NT"}, {"id": 128, "reference": "Philippians 2:1-11", "text": "So if there is any encouragement in Christ, any comfort from\u00a0love, any\u00a0participation in the Spirit, any\u00a0affection and sympathy, complete my joy by being\u00a0of the same mind, having the same love, being in full accord and of one mind. Do nothing from\u00a0selfish ambition or\u00a0conceit, but in humility count others more significant than yourselves. Let each of you\u00a0look not only to his own interests, but also to the interests of others. Have this mind among yourselves, which is yours in Christ Jesus, who, though he was in\u00a0the form of God, did not count equality with God a thing to be grasped,\u00a0but\u00a0emptied himself, by taking the form of a\u00a0servant,\u00a0being born in the likeness of men. And being found in human form, he humbled himself by becoming obedient to the point of death,\u00a0even death on a cross. Therefore\u00a0God has\u00a0highly exalted him and bestowed on him\u00a0the name that is above every name, so that at the name of Jesus\u00a0every knee should bow,\u00a0in heaven and on earth and under the earth,\u00a0and\u00a0every tongue confess that Jesus Christ is\u00a0Lord, to the glory of God the Father.", "testament": "NT"}, {"id": 129, "reference": "Philippians 2:13", "text": "For\u00a0it is God who works in you, both to will and to work for\u00a0his good pleasure.", "testament": "NT"}, {"id": 130, "reference": "Philippians 3:7-8", "text": "But\u00a0whatever gain I had,\u00a0I counted as loss for the sake of Christ.\u00a0Indeed, I count everything as loss because of the surpassing worth of\u00a0knowing Christ Jesus my Lord. For his sake I\u00a0have suffered the loss of all things and count them as rubbish, in order that I may gain Christ", "testament": "NT"}, {"id": 131, "reference": "Philippians 3:13-14", "text": "Brothers, I do not consider that I have made it my own. But one thing I do:\u00a0forgetting what lies behind and straining forward to what lies ahead, I press on toward the goal for\u00a0the prize of the upward\u00a0call of God in Christ Jesus.", "testament": "NT"}, {"id": 132, "reference": "Philippians 4:6-7", "text": "Do not be anxious about anything,\u00a0but in everything by prayer and supplication\u00a0with thanksgiving let your requests be made known to God.\u00a0And\u00a0the peace of God,\u00a0which surpasses all understanding, will guard your hearts and your minds in Christ Jesus.", "testament": "NT"}, {"id": 133, "reference": "Philippians 4:8", "text": "Finally, brothers, whatever is true, whatever is honorable, whatever is just, whatever is pure, whatever is lovely, whatever is commendable, if there is any excellence, if there is anything worthy of praise, think about these things.", "testament": "NT"}, {"id": 134, "reference": "Philippians 4:19", "text": "And my God\u00a0will supply every need of yours\u00a0according to his riches in glory in Christ Jesus.", "testament": "NT"}, {"id": 135, "reference": "Colossians 3:1-2", "text": "If then you have been raised with Christ, seek\u00a0the things that are above, where Christ is,\u00a0seated at the right hand of God.\u00a0Set your minds on things that are above, not on things that are on earth.", "testament": "NT"}, {"id": 136, "reference": "1 Thessalonians 5:16-18", "text": "Rejoice always,\u00a0pray without ceasing,\u00a0give thanks in all circumstances; for this is the will of God in Christ Jesus for you.", "testament": "NT"}, {"id": 137, "reference": "1 Timothy 6:6-8", "text": "But\u00a0godliness\u00a0with contentment is great gain,\u00a0for\u00a0we brought nothing into the world, and\u00a0we cannot take anything out of the world. But\u00a0if we have food and clothing, with these we will be content.", "testament": "NT"}, {"id": 138, "reference": "2 Timothy 1:7", "text": "For God gave us\u00a0a spirit not of fear but\u00a0of power and love and self-control.", "testament": "NT"}, {"id": 139, "reference": "2 Timothy 1:12", "text": "Which is why I suffer as I do. But\u00a0I am not ashamed, for I know whom I have believed, and I am convinced that he is able to guard until\u00a0that Day\u00a0what has been entrusted to me.", "testament": "NT"}, {"id": 140, "reference": "2 Timothy 2:3-4", "text": "Share in suffering as\u00a0a good soldier of Christ Jesus. No soldier\u00a0gets entangled in civilian pursuits, since his aim is to please the one who enlisted him.", "testament": "NT"}, {"id": 141, "reference": "2 Timothy 2:21", "text": "Therefore,\u00a0if anyone cleanses himself from what is dishonorable,\u00a0he will be a vessel for honorable use, set apart as holy, useful to the master of the house,\u00a0ready for every good work.", "testament": "NT"}, {"id": 142, "reference": "2 Timothy 3:16-17", "text": "All Scripture is breathed out by God and profitable for teaching, for reproof, for correction, and for training in righteousness, that\u00a0the man of God\u00a0may be complete, equipped\u00a0for every good work.", "testament": "NT"}, {"id": 143, "reference": "2 Timothy 4:6-8", "text": "For\u00a0I am already being poured out as a drink offering, and the time of my\u00a0departure has come. I have fought the good fight,\u00a0I have finished the race, I have kept the faith.\u00a0Henceforth there is\u00a0laid up for me\u00a0the crown of righteousness, which the Lord,\u00a0the righteous judge, will award to me on\u00a0that Day, and not only to me but also to all\u00a0who have loved his appearing.", "testament": "NT"}, {"id": 144, "reference": "Hebrews 4:12", "text": "For\u00a0the word of God is living and\u00a0active,\u00a0sharper than any\u00a0two-edged sword, piercing to the division of soul and of spirit, of joints and of marrow, and\u00a0discerning the thoughts and intentions of the heart.", "testament": "NT"}, {"id": 145, "reference": "Hebrews 4:15-16", "text": "For we do not have a high priest\u00a0who is unable to sympathize with our weaknesses, but one who in every respect has been\u00a0tempted as we are,\u00a0yet without sin. Let us then with confidence draw near to the throne of grace, that we may receive mercy and find grace to help in time of need.", "testament": "NT"}, {"id": 146, "reference": "Hebrews 10:23-25", "text": "Let us hold fast the confession of our hope without wavering, for\u00a0he who promised is faithful. And\u00a0let us consider how to stir up one another to love and good works, not neglecting to meet together, as is the habit of some, but encouraging one another, and\u00a0all the more as you see\u00a0the Day drawing near.", "testament": "NT"}, {"id": 147, "reference": "Hebrews 11:1", "text": "Now faith is the assurance of things hoped for, the conviction of\u00a0things not seen.", "testament": "NT"}, {"id": 148, "reference": "Hebrews 11:6", "text": "And without faith it is impossible to please him, for whoever would draw near to God\u00a0must believe that he exists and\u00a0that he rewards those who seek him.", "testament": "NT"}, {"id": 149, "reference": "Hebrews 12:1-2", "text": "Therefore, since we are surrounded by so great a cloud of witnesses, let us also lay aside every weight, and sin which clings so closely, and\u00a0let us run\u00a0with endurance the race that is\u00a0set before us,", "testament": "NT"}, {"id": 150, "reference": "Hebrews 12:4", "text": "In your struggle against sin you have not yet resisted to the point of shedding your blood.", "testament": "NT"}, {"id": 151, "reference": "Hebrews 12:11", "text": "For the moment all discipline seems painful rather than pleasant, but later it yields\u00a0the peaceful fruit of righteousness to those who have been trained by it.", "testament": "NT"}, {"id": 152, "reference": "James 4:7", "text": "Submit yourselves therefore to God.\u00a0Resist the devil, and he will flee from you.", "testament": "NT"}, {"id": 153, "reference": "1 Peter 1:18-19", "text": "Knowing that you\u00a0were ransomed from\u00a0the futile ways inherited from your forefathers, not with perishable things such as silver or gold,\u00a0but\u00a0with the precious blood of Christ, like that of\u00a0a lamb\u00a0without blemish or spot.", "testament": "NT"}, {"id": 154, "reference": "1 Peter 2:9", "text": "But you are\u00a0a chosen race,\u00a0a royal\u00a0priesthood,\u00a0a holy nation,\u00a0a people for his own possession, that you may proclaim the excellencies of him who called you\u00a0out of darkness into\u00a0his marvelous light.", "testament": "NT"}, {"id": 155, "reference": "1 Peter 2:11-12", "text": "Beloved, I urge you\u00a0as sojourners and exiles\u00a0to abstain from the passions of the flesh,\u00a0which wage war against your soul.\u00a0Keep your conduct among the Gentiles honorable, so that when they speak against you as evildoers, they may see your good deeds and glorify God on\u00a0the day of visitation.", "testament": "NT"}, {"id": 156, "reference": "1 Peter 2:21", "text": "For\u00a0to this you have been called,\u00a0because Christ also suffered for you,\u00a0leaving you an example, so that you might follow in his steps.", "testament": "NT"}, {"id": 157, "reference": "1 Peter 3:15-16", "text": "But\u00a0in your hearts honor Christ the Lord as holy,\u00a0always being prepared to make a defense to anyone who asks you for a reason for the hope that is in you; yet do it with gentleness and\u00a0respect, having a good conscience, so that,\u00a0when you are slandered, those who revile your good behavior in Christ may be put to shame.", "testament": "NT"}, {"id": 158, "reference": "1 Peter 4:7-8", "text": "The end of all things is at hand; therefore\u00a0be self-controlled and sober-minded\u00a0for the sake of your prayers. Above all, keep loving one another earnestly, since\u00a0love covers a multitude of sins.", "testament": "NT"}, {"id": 159, "reference": "1 Peter 4:10", "text": "As each has received a gift, use it to serve one another, as good stewards of God's varied grace.", "testament": "NT"}, {"id": 160, "reference": "1 Peter 5:6-7", "text": "Humble yourselves, therefore, under the mighty hand of God so that at the proper time he may exalt you,\u00a0casting all your anxieties on him, because\u00a0he cares for you.", "testament": "NT"}, {"id": 161, "reference": "1 Peter 5:8-9", "text": "Be sober-minded;\u00a0be watchful. Your\u00a0adversary the devil prowls around\u00a0like a roaring lion, seeking someone to devour. Resist him,\u00a0firm in your faith, knowing that\u00a0the same kinds of suffering are being experienced by your brotherhood throughout the world.", "testament": "NT"}, {"id": 162, "reference": "2 Peter 3:8-9", "text": "But do not overlook this one fact, beloved, that with the Lord one day is as a thousand years, and\u00a0a thousand years as one day. The Lord is not slow to fulfill his promise\u00a0as some count slowness, but\u00a0is patient toward you,\u00a0not wishing that any should perish, but\u00a0that all should reach repentance.", "testament": "NT"}, {"id": 163, "reference": "1 John 1:9", "text": "If we confess our sins, he is\u00a0faithful and just to forgive us our sins and\u00a0to cleanse us from all unrighteousness.", "testament": "NT"}, {"id": 164, "reference": "1 John 2:15-16", "text": "Do not love the world or the things in the world.\u00a0If anyone loves the world, the love of the Father is not in him.\u00a0For all that is in the world\u2014the desires of the flesh and\u00a0the desires of the eyes and pride of life \u2014 is not from the Father but is from the world.", "testament": "NT"}, {"id": 165, "reference": "1 John 3:16", "text": "By this we know love, that\u00a0he laid down his life for us, and\u00a0we ought to lay down our lives for the brothers.", "testament": "NT"}, {"id": 166, "reference": "1 John 4:4", "text": "Little children, you are from God and have overcome them, for\u00a0he who is in you is greater than\u00a0he who is in the world.", "testament": "NT"}, {"id": 167, "reference": "1 John 4:17-19", "text": "By this\u00a0is love perfected with us, so that\u00a0we may have confidence for the day of judgment, because\u00a0as he is so also are we in this world.\u00a0There is no fear in love, but perfect love casts out fear. For fear has to do with punishment, and whoever fears has not\u00a0been perfected in love. We love because he first loved us.", "testament": "NT"}, {"id": 168, "reference": "1 John 5:3", "text": "For\u00a0this is the love of God, that we\u00a0keep his commandments. And\u00a0his commandments are not burdensome.", "testament": "NT"}, {"id": 169, "reference": "1 John 5:13-15", "text": "I write\u00a0these things to you who\u00a0believe in the name of the Son of God that you may know that you have eternal life.\u00a0And this is\u00a0the confidence that we have toward him, that\u00a0if we ask anything according to his will he hears us. And if we know that he hears us in whatever we ask, we know that we have the requests that we have asked of him.", "testament": "NT"}, {"id": 170, "reference": "Revelation 3:20", "text": "Behold, I stand at the door and\u00a0knock.\u00a0If anyone hears my voice and opens the door,\u00a0I will come in to him and eat with him, and he with me.", "testament": "NT"}];
+</script>
+<script>
+// ---------------- State & storage ----------------
+let progress = {}; // id -> {status, box, lastSeen}
+let streak = {count:0, lastDay:null};
+let queue = [];
+let qIndex = 0;
+let currentMode = null; // 'ref2verse' | 'verse2ref'
+let flipped = false;
+let sessionKind = null; // 'due' | 'new' | 'all'
+let browseFilter = {testament:'all', status:'all'};
+
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+
+async function loadState(){
+  try{
+    const p = await window.storage.get('progress', false);
+    progress = p ? JSON.parse(p.value) : {};
+  }catch(e){ progress = {}; }
+  try{
+    const s = await window.storage.get('streak', false);
+    streak = s ? JSON.parse(s.value) : {count:0, lastDay:null};
+  }catch(e){ streak = {count:0, lastDay:null}; }
+  renderHome();
+}
+
+async function saveProgress(){
+  try{ await window.storage.set('progress', JSON.stringify(progress), false); }catch(e){}
+}
+async function saveStreak(){
+  try{ await window.storage.set('streak', JSON.stringify(streak), false); }catch(e){}
+}
+
+function bumpStreak(){
+  const t = todayStr();
+  if(streak.lastDay === t) return;
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+  if(streak.lastDay === yesterday){ streak.count += 1; } else { streak.count = 1; }
+  streak.lastDay = t;
+  saveStreak();
+}
+
+function statusOf(id){
+  const p = progress[id];
+  return p ? p.status : 'new';
+}
+
+// box: 0=new,1-2=learning,3-4=review,5+=mastered-ish; status derived
+function rate(id, grade){ // grade: 'again' | 'good' | 'easy'
+  const p = progress[id] || {status:'new', box:0, lastSeen:null};
+  if(grade === 'again'){ p.box = 0; p.status = 'learning'; }
+  else if(grade === 'good'){ p.box = Math.min(p.box+1, 6); }
+  else { p.box = Math.min(p.box+2, 6); }
+  if(grade !== 'again'){
+    if(p.box <= 1) p.status = 'learning';
+    else if(p.box <= 3) p.status = 'review';
+    else p.status = 'mastered';
+  }
+  p.lastSeen = todayStr();
+  progress[id] = p;
+  saveProgress();
+  bumpStreak();
+  renderHome();
+}
+
+// ---------------- Screens ----------------
+const homeScreen = document.getElementById('home-screen');
+const practiceScreen = document.getElementById('practice-screen');
+const browseScreen = document.getElementById('browse-screen');
+
+function showScreen(name){
+  homeScreen.classList.add('hidden');
+  practiceScreen.classList.add('hidden');
+  browseScreen.classList.add('hidden');
+  if(name==='home') { homeScreen.classList.remove('hidden'); renderHome(); }
+  if(name==='practice') practiceScreen.classList.remove('hidden');
+  if(name==='browse') { browseScreen.classList.remove('hidden'); renderBrowse(); }
+}
+
+function renderHome(){
+  const total = VERSES.length;
+  let mastered=0, review=0, learning=0;
+  VERSES.forEach(v=>{
+    const s = statusOf(v.id);
+    if(s==='mastered') mastered++;
+    else if(s==='review') review++;
+    else if(s==='learning') learning++;
+  });
+  const due = VERSES.filter(v => statusOf(v.id) !== 'mastered').length;
+  document.getElementById('mastered-count').textContent = mastered;
+  document.getElementById('due-label').textContent = due + (due===1?' due today':' due today');
+  document.getElementById('seg-mastered').style.width = (mastered/total*100)+'%';
+  document.getElementById('seg-review').style.width = (review/total*100)+'%';
+  document.getElementById('seg-learning').style.width = (learning/total*100)+'%';
+  document.getElementById('streak-text').textContent = streak.count + (streak.count===1?' day streak':' day streak');
+}
+
+// ---------------- Practice logic ----------------
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+let lastMode = 'flashcards', lastPoolKind = 'due', lastExtra = null;
+
+function getPool(kind){
+  if(kind==='due') return VERSES.filter(v => statusOf(v.id) !== 'mastered');
+  if(kind==='new') return VERSES.filter(v => statusOf(v.id) === 'new');
+  return VERSES.slice();
+}
+
+function showModeSetup(mode){
+  showScreen('practice');
+  document.getElementById('queue-count').textContent = '';
+  const dueN = getPool('due').length, newN = getPool('new').length, allN = VERSES.length;
+  const body = document.getElementById('practice-body');
+  body.innerHTML = `
+    <div class="diff-intro">Which verses do you want to practice?</div>
+    <div class="diff-grid">
+      <div class="diff-card" data-pool="due"><div class="d-title">Due for review (${dueN})</div><div class="d-desc">Everything not yet mastered.</div></div>
+      <div class="diff-card" data-pool="new"><div class="d-title">New verses (${newN})</div><div class="d-desc">Verses you haven't started.</div></div>
+      <div class="diff-card" data-pool="all"><div class="d-title">Everything (${allN})</div><div class="d-desc">Shuffle through the whole list.</div></div>
+    </div>
+  `;
+  document.querySelectorAll('.diff-card').forEach(c=>{
+    c.onclick = () => {
+      const poolKind = c.dataset.pool;
+      if(mode === 'blank') showDifficultyPicker(poolKind);
+      else launchMode(mode, poolKind, null);
+    };
+  });
+}
+
+function showDifficultyPicker(poolKind){
+  const body = document.getElementById('practice-body');
+  body.innerHTML = `
+    <div class="diff-intro">Choose how much of the verse gets blanked out.</div>
+    <div class="diff-grid">
+      <div class="diff-card" data-pct="0.2">
+        <div class="d-title">Easy — light blanks</div>
+        <div class="d-desc">About 1 in 5 words missing. Good for a first pass.</div>
+      </div>
+      <div class="diff-card" data-pct="0.4">
+        <div class="d-title">Medium — real recall</div>
+        <div class="d-desc">About 2 in 5 words missing. The default challenge.</div>
+      </div>
+      <div class="diff-card" data-pct="0.7">
+        <div class="d-title">Hard — nearly blank</div>
+        <div class="d-desc">Most words missing. For verses you know well.</div>
+      </div>
+    </div>
+  `;
+  document.querySelectorAll('.diff-card').forEach(c=>{
+    c.onclick = () => launchMode('blank', poolKind, parseFloat(c.dataset.pct));
+  });
+}
+
+function launchMode(mode, poolKind, extra){
+  let pool = getPool(poolKind);
+  if(pool.length === 0){
+    queue = [];
+    showScreen('practice');
+    renderEmptyPractice(poolKind);
+    return;
+  }
+  queue = shuffle(pool);
+  qIndex = 0;
+  sessionKind = mode;
+  lastMode = mode; lastPoolKind = poolKind; lastExtra = extra;
+  fbPct = extra || 0.35;
+  showScreen('practice');
+  if(mode === 'flashcards') renderCard();
+  else if(mode === 'blank') renderFillBlankCard();
+  else if(mode === 'firstletter') renderFirstLetterCard();
+  else if(mode === 'freetype') renderFreeTypeCard();
+}
+
+function replayLast(){
+  launchMode(lastMode, lastPoolKind, lastExtra);
+}
+
+function renderEmptyPractice(kind){
+  const body = document.getElementById('practice-body');
+  document.getElementById('queue-count').textContent = '';
+  let msg = "Nothing here right now.";
+  if(kind==='new') msg = "You've started every verse at least once — try Due or Everything instead.";
+  if(kind==='due') msg = "Nothing due — everything's mastered. Try Everything to keep it fresh.";
+  body.innerHTML = `<div class="empty-state"><div class="big-emoji">📜</div><div>${msg}</div></div>`;
+}
+
+function pickMode(){
+  return Math.random() < 0.5 ? 'ref2verse' : 'verse2ref';
+}
+
+function renderCard(){
+  if(qIndex >= queue.length){
+    const body = document.getElementById('practice-body');
+    document.getElementById('queue-count').textContent = '';
+    body.innerHTML = `<div class="empty-state"><div class="big-emoji">✝️</div><div>Session complete. Well done.</div></div>
+      <div class="actions" style="margin-top:20px;">
+        <button class="action-btn primary" id="again-btn">Practice again</button>
+        <button class="action-btn" id="home-btn2">Back home</button>
+      </div>`;
+    document.getElementById('again-btn').onclick = () => replayLast();
+    document.getElementById('home-btn2').onclick = () => showScreen('home');
+    return;
+  }
+  const v = queue[qIndex];
+  currentMode = pickMode();
+  flipped = false;
+  document.getElementById('queue-count').textContent = `Card ${qIndex+1} of ${queue.length}`;
+
+  const body = document.getElementById('practice-body');
+  const isRef2Verse = currentMode === 'ref2verse';
+  const frontLabel = isRef2Verse ? 'Recall the verse' : 'Recall the reference';
+  const frontContentClass = isRef2Verse ? 'reference-display' : '';
+  const frontContent = isRef2Verse ? v.reference : v.text;
+
+  body.innerHTML = `
+    <div class="flip-prompt">Tap the card to reveal</div>
+    <div class="card-stage">
+      <div class="flashcard" id="flashcard">
+        <div class="card-mode-tag">${frontLabel}</div>
+        <div class="card-content ${frontContentClass}">${frontContent}</div>
+        <div class="card-back hidden" id="card-back">
+          ${isRef2Verse
+            ? `<div class="card-content" style="font-size:1.05rem;">${v.text}</div>`
+            : `<div class="ref-small">${v.reference}</div>`
+          }
+        </div>
+        <div class="card-hint" id="card-hint">tap to reveal</div>
+      </div>
+    </div>
+    <div id="rate-area" class="hidden">
+      <div class="rate-row">
+        <button class="rate-btn again" data-g="again">Again</button>
+        <button class="rate-btn good" data-g="good">Good</button>
+        <button class="rate-btn easy" data-g="easy">Easy</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('flashcard').onclick = () => {
+    if(flipped) return;
+    flipped = true;
+    document.getElementById('card-back').classList.remove('hidden');
+    document.getElementById('card-hint').classList.add('hidden');
+    document.getElementById('rate-area').classList.remove('hidden');
+  };
+
+  document.querySelectorAll('#rate-area .rate-btn').forEach(btn=>{
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      rate(v.id, btn.dataset.g);
+      qIndex++;
+      renderCard();
+    };
+  });
+}
+
+
+// ---------------- Fill in the blank ----------------
+let fbPct = 0.35;
+let fbTokens = []; // {prefix, core, suffix, blank:bool, id}
+
+function tokenizeVerse(text, allWords){
+  const words = text.split(/(\s+)/); // keep whitespace tokens too
+  return words.map((w,i)=>{
+    if(/^\s+$/.test(w) || w==='') return {raw:w, isSpace:true};
+    const m = w.match(/^([^A-Za-z0-9']*)([A-Za-z0-9'’]+)([^A-Za-z0-9]*)$/);
+    if(!m) return {raw:w, isSpace:false, eligible:false};
+    const minLen = allWords ? 1 : 3;
+    return {raw:w, isSpace:false, eligible: m[2].length>=minLen, prefix:m[1], core:m[2], suffix:m[3]};
+  });
+}
+
+function normWord(s){
+  return s.toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9']/g,'');
+}
+
+function renderFillBlankCard(){
+  if(qIndex >= queue.length){
+    const body = document.getElementById('practice-body');
+    document.getElementById('queue-count').textContent = '';
+    body.innerHTML = `<div class="empty-state"><div class="big-emoji">✝️</div><div>Session complete. Well done.</div></div>
+      <div class="actions" style="margin-top:20px;">
+        <button class="action-btn primary" id="again-btn">Practice again</button>
+        <button class="action-btn" id="home-btn2">Back home</button>
+      </div>`;
+    document.getElementById('again-btn').onclick = () => replayLast();
+    document.getElementById('home-btn2').onclick = () => showScreen('home');
+    return;
+  }
+  const v = queue[qIndex];
+  document.getElementById('queue-count').textContent = `Card ${qIndex+1} of ${queue.length}`;
+
+  fbTokens = tokenizeVerse(v.text);
+  const eligibleIdx = fbTokens.map((t,i)=>t.eligible?i:-1).filter(i=>i>=0);
+  const blankCount = Math.max(1, Math.round(eligibleIdx.length * fbPct));
+  const chosen = new Set(shuffle(eligibleIdx).slice(0, blankCount));
+  chosen.forEach(i => fbTokens[i].blank = true);
+
+  let html = '';
+  let blankId = 0;
+  fbTokens.forEach((t)=>{
+    if(t.isSpace){ html += t.raw; return; }
+    if(t.blank){
+      const bid = 'fb-'+(blankId++);
+      t.bid = bid;
+      const w = Math.max(3, t.core.length) + 1;
+      html += `${t.prefix}<input class="blank-input" id="${bid}" data-core="${t.core.replace(/"/g,'&quot;')}" style="width:${w}ch" autocomplete="off" autocapitalize="off" spellcheck="false">${t.suffix}`;
+    } else {
+      html += t.raw;
+    }
+  });
+
+  const body = document.getElementById('practice-body');
+  body.innerHTML = `
+    <div class="blank-card">
+      <div class="blank-toprow"><div class="blank-ref-tag">${v.reference}</div></div>
+      <div class="blank-verse" id="blank-verse">${html}</div>
+    </div>
+    <div class="actions" style="margin-bottom:14px;">
+      <button class="action-btn primary" id="check-btn" style="grid-column:1/-1;">Check answers</button>
+    </div>
+    <div id="fb-rate-area"></div>
+  `;
+  document.getElementById('check-btn').onclick = () => checkBlanks(v);
+
+  // enter-to-check
+  document.querySelectorAll('.blank-input').forEach(inp=>{
+    inp.addEventListener('keydown', e=>{ if(e.key==='Enter') checkBlanks(v); });
+  });
+  const firstInput = document.querySelector('.blank-input');
+  if(firstInput) firstInput.focus();
+}
+
+function checkBlanks(v){
+  const inputs = document.querySelectorAll('.blank-input');
+  let correct = 0;
+  inputs.forEach(inp=>{
+    const given = normWord(inp.value);
+    const actual = normWord(inp.dataset.core);
+    inp.disabled = true;
+    if(given === actual && given.length>0){
+      inp.classList.add('correct');
+      correct++;
+    } else {
+      inp.classList.add('incorrect');
+      inp.insertAdjacentHTML('afterend', `<span class="blank-correction">(${inp.dataset.core})</span>`);
+    }
+  });
+  const pct = inputs.length ? Math.round(correct/inputs.length*100) : 100;
+
+  const area = document.getElementById('fb-rate-area');
+  area.innerHTML = `
+    <div class="accuracy-line">You got <b>${correct} of ${inputs.length}</b> blanks right (${pct}%).</div>
+    <div class="rate-row">
+      <button class="rate-btn again" data-g="again">Again</button>
+      <button class="rate-btn good" data-g="good">Good</button>
+      <button class="rate-btn easy" data-g="easy">Easy</button>
+    </div>
+  `;
+  document.getElementById('check-btn').remove();
+  area.querySelectorAll('.rate-btn').forEach(btn=>{
+    btn.onclick = () => {
+      rate(v.id, btn.dataset.g);
+      qIndex++;
+      renderFillBlankCard();
+    };
+  });
+}
+
+// ---------------- Type First Letter ----------------
+function renderFirstLetterCard(){
+  if(qIndex >= queue.length){
+    const body = document.getElementById('practice-body');
+    document.getElementById('queue-count').textContent = '';
+    body.innerHTML = `<div class="empty-state"><div class="big-emoji">✝️</div><div>Session complete. Well done.</div></div>
+      <div class="actions" style="margin-top:20px;">
+        <button class="action-btn primary" id="again-btn">Practice again</button>
+        <button class="action-btn" id="home-btn2">Back home</button>
+      </div>`;
+    document.getElementById('again-btn').onclick = () => replayLast();
+    document.getElementById('home-btn2').onclick = () => showScreen('home');
+    return;
+  }
+  const v = queue[qIndex];
+  document.getElementById('queue-count').textContent = `Card ${qIndex+1} of ${queue.length}`;
+
+  fbTokens = tokenizeVerse(v.text, true); // allWords: blank every word, even short ones
+
+  let html = '';
+  fbTokens.forEach((t)=>{
+    if(t.isSpace){ html += t.raw; return; }
+    if(t.eligible){
+      html += `${t.prefix}<input class="blank-input" data-core="${t.core.replace(/"/g,'&quot;')}" maxlength="1" style="width:2.2ch" autocomplete="off" autocapitalize="off" spellcheck="false">${t.suffix}`;
+    } else {
+      html += t.raw;
+    }
+  });
+
+  const body = document.getElementById('practice-body');
+  body.innerHTML = `
+    <div class="blank-card">
+      <div class="blank-toprow"><div class="blank-ref-tag">${v.reference}</div></div>
+      <div style="font-size:0.8rem;color:#8a6329;font-style:italic;margin-bottom:10px;">Type just the first letter of every word.</div>
+      <div class="blank-verse" id="blank-verse">${html}</div>
+    </div>
+    <div class="actions" style="margin-bottom:14px;">
+      <button class="action-btn primary" id="check-btn" style="grid-column:1/-1;">Check answers</button>
+    </div>
+    <div id="fb-rate-area"></div>
+  `;
+  document.getElementById('check-btn').onclick = () => checkFirstLetters(v);
+
+  const allInputs = document.querySelectorAll('.blank-input');
+  allInputs.forEach((inp, idx)=>{
+    inp.addEventListener('input', ()=>{
+      if(inp.value.length >= 1 && allInputs[idx+1]) allInputs[idx+1].focus();
+    });
+    inp.addEventListener('keydown', e=>{ if(e.key==='Enter') checkFirstLetters(v); });
+  });
+  if(allInputs[0]) allInputs[0].focus();
+}
+
+function checkFirstLetters(v){
+  const inputs = document.querySelectorAll('.blank-input');
+  let correct = 0;
+  inputs.forEach(inp=>{
+    const given = normWord(inp.value).charAt(0);
+    const actual = normWord(inp.dataset.core).charAt(0);
+    inp.disabled = true;
+    if(given === actual && given.length>0){
+      inp.classList.add('correct');
+      correct++;
+    } else {
+      inp.classList.add('incorrect');
+      inp.insertAdjacentHTML('afterend', `<span class="blank-correction">(${inp.dataset.core})</span>`);
+    }
+  });
+  const pct = inputs.length ? Math.round(correct/inputs.length*100) : 100;
+
+  const area = document.getElementById('fb-rate-area');
+  area.innerHTML = `
+    <div class="accuracy-line">You got <b>${correct} of ${inputs.length}</b> first letters right (${pct}%).</div>
+    <div class="rate-row">
+      <button class="rate-btn again" data-g="again">Again</button>
+      <button class="rate-btn good" data-g="good">Good</button>
+      <button class="rate-btn easy" data-g="easy">Easy</button>
+    </div>
+  `;
+  document.getElementById('check-btn').remove();
+  area.querySelectorAll('.rate-btn').forEach(btn=>{
+    btn.onclick = () => {
+      rate(v.id, btn.dataset.g);
+      qIndex++;
+      renderFirstLetterCard();
+    };
+  });
+}
+
+// ---------------- Free Type ----------------
+function renderFreeTypeCard(){
+  if(qIndex >= queue.length){
+    const body = document.getElementById('practice-body');
+    document.getElementById('queue-count').textContent = '';
+    body.innerHTML = `<div class="empty-state"><div class="big-emoji">✝️</div><div>Session complete. Well done.</div></div>
+      <div class="actions" style="margin-top:20px;">
+        <button class="action-btn primary" id="again-btn">Practice again</button>
+        <button class="action-btn" id="home-btn2">Back home</button>
+      </div>`;
+    document.getElementById('again-btn').onclick = () => replayLast();
+    document.getElementById('home-btn2').onclick = () => showScreen('home');
+    return;
+  }
+  const v = queue[qIndex];
+  document.getElementById('queue-count').textContent = `Card ${qIndex+1} of ${queue.length}`;
+
+  const body = document.getElementById('practice-body');
+  body.innerHTML = `
+    <div class="blank-card">
+      <div class="blank-toprow"><div class="blank-ref-tag">${v.reference}</div></div>
+      <div style="font-size:0.8rem;color:#8a6329;font-style:italic;margin-bottom:10px;">Type the whole verse from memory.</div>
+      <textarea id="freetype-input" rows="5" style="width:100%;font-family:'Fraunces',serif;font-size:1.05rem;padding:10px;border-radius:8px;border:1px solid var(--line);background:rgba(184,135,63,0.06);color:var(--ink);resize:vertical;box-sizing:border-box;" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
+    </div>
+    <div class="actions" style="margin-bottom:14px;">
+      <button class="action-btn primary" id="check-btn" style="grid-column:1/-1;">Check my answer</button>
+    </div>
+    <div id="fb-rate-area"></div>
+  `;
+  document.getElementById('check-btn').onclick = () => checkFreeType(v);
+  document.getElementById('freetype-input').focus();
+}
+
+function checkFreeType(v){
+  const typedRaw = document.getElementById('freetype-input').value;
+  const actualWords = v.text.split(/\s+/).map(w=>({raw:w, norm:normWord(w)})).filter(w=>w.norm.length>0);
+  const typedWords = typedRaw.split(/\s+/).map(normWord).filter(w=>w.length>0);
+  let correct = 0;
+  const rendered = actualWords.map((w,i)=>{
+    const match = typedWords[i] === w.norm;
+    if(match) correct++;
+    return `<span style="${match ? 'color:#3d5c39;' : 'color:#7a3a34;text-decoration:line-through;text-decoration-color:rgba(168,90,82,0.5);'}">${w.raw}</span>`;
+  }).join(' ');
+  const pct = actualWords.length ? Math.round(correct/actualWords.length*100) : 100;
+
+  document.getElementById('freetype-input').disabled = true;
+  const area = document.getElementById('fb-rate-area');
+  area.innerHTML = `
+    <div class="blank-card" style="margin-top:0;">
+      <div class="blank-toprow"><div class="blank-ref-tag">Correct text</div></div>
+      <div class="blank-verse">${rendered}</div>
+    </div>
+    <div class="accuracy-line">You matched <b>${correct} of ${actualWords.length}</b> words in order (${pct}%).</div>
+    <div class="rate-row">
+      <button class="rate-btn again" data-g="again">Again</button>
+      <button class="rate-btn good" data-g="good">Good</button>
+      <button class="rate-btn easy" data-g="easy">Easy</button>
+    </div>
+  `;
+  document.getElementById('check-btn').remove();
+  area.querySelectorAll('.rate-btn').forEach(btn=>{
+    btn.onclick = () => {
+      rate(v.id, btn.dataset.g);
+      qIndex++;
+      renderFreeTypeCard();
+    };
+  });
+}
+
+// ---------------- Browse ----------------
+function renderBrowse(){
+  const filterRow = document.getElementById('filter-row');
+  filterRow.innerHTML = '';
+  const chips = [
+    {key:'testament', val:'all', label:'All'},
+    {key:'testament', val:'OT', label:'Old Testament'},
+    {key:'testament', val:'NT', label:'New Testament'},
+  ];
+  const statusChips = [
+    {key:'status', val:'all', label:'Any status'},
+    {key:'status', val:'new', label:'New'},
+    {key:'status', val:'learning', label:'Learning'},
+    {key:'status', val:'review', label:'Review'},
+    {key:'status', val:'mastered', label:'Mastered'},
+  ];
+  [...chips, ...statusChips].forEach(c=>{
+    const el = document.createElement('div');
+    const active = browseFilter[c.key] === c.val;
+    el.className = 'filter-chip' + (active?' active':'');
+    el.textContent = c.label;
+    el.onclick = () => { browseFilter[c.key] = c.val; renderBrowse(); };
+    filterRow.appendChild(el);
+  });
+
+  let list = VERSES.filter(v=>{
+    if(browseFilter.testament!=='all' && v.testament!==browseFilter.testament) return false;
+    if(browseFilter.status!=='all' && statusOf(v.id)!==browseFilter.status) return false;
+    return true;
+  });
+
+  document.getElementById('browse-count').textContent = list.length + ' verses';
+  const listEl = document.getElementById('browse-list');
+  if(list.length===0){
+    listEl.innerHTML = `<div class="empty-state"><div class="big-emoji">🔍</div><div>No verses match this filter.</div></div>`;
+    return;
+  }
+  listEl.innerHTML = list.map(v=>{
+    const s = statusOf(v.id);
+    return `<div class="verse-row" data-id="${v.id}">
+      <div class="vr-top">
+        <div class="vr-ref">${v.reference}</div>
+        <div class="vr-status ${s}">${s}</div>
+      </div>
+      <div class="vr-text">${v.text}</div>
+    </div>`;
+  }).join('');
+}
+
+// ---------------- Wiring ----------------
+document.getElementById('btn-mode-flashcards').onclick = () => showModeSetup('flashcards');
+document.getElementById('btn-mode-blank').onclick = () => showModeSetup('blank');
+document.getElementById('btn-mode-firstletter').onclick = () => showModeSetup('firstletter');
+document.getElementById('btn-mode-freetype').onclick = () => showModeSetup('freetype');
+document.getElementById('btn-browse').onclick = () => showScreen('browse');
+document.getElementById('btn-back-1').onclick = () => showScreen('home');
+document.getElementById('btn-back-2').onclick = () => showScreen('home');
+document.getElementById('reset-link').onclick = async () => {
+  if(confirm('Reset all progress? This cannot be undone.')){
+    progress = {};
+    streak = {count:0, lastDay:null};
+    await saveProgress();
+    await saveStreak();
+    renderHome();
+  }
+};
+
+loadState();
+</script>
+</body>
+</html>
